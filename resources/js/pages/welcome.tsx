@@ -4,7 +4,7 @@ import { useForm , Head, Link, usePage } from '@inertiajs/react';
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-
+import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import AuthenticatedSessionController from '@/actions/App/Http/Controllers/Auth/AuthenticatedSessionController';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -29,7 +29,7 @@ export default function Welcome({ status, canResetPassword }: LoginProps) {
     const [activeForm, setActiveForm] = useState<"login" | "register" | "trace" | null>(null);
     const loginForm = useForm({ user_name: "", password: "" });
     const registerForm = useForm({ name: "", user_name: "", email: "", password: "" });
-    const traceForm = useForm({ national_id: "" });
+    const traceForm = useForm({ national_id: "", file_no: "" });
 
 
     return (
@@ -113,155 +113,196 @@ export default function Welcome({ status, canResetPassword }: LoginProps) {
                     {activeForm === "login" && (
 
 
-           <Form
-    {...AuthenticatedSessionController.store.form()}
-    resetOnSuccess={['password']}
-    className="flex flex-col gap-6"
->
-    {({ processing, errors }) => (
-        <>
-            <div className="grid gap-6">
-                <div className="grid gap-2">
-                    <Label htmlFor="user_name">Username</Label>
-                    <Input
-                        id="user_name"
-                        type="text"
-                        name="user_name"
-                        required
-                        autoFocus
-                        tabIndex={1}
-                        autoComplete="username"
-                        placeholder="Enter your username"
-                    />
-                    <InputError message={errors.user_name} />
-                </div>
-
-                <div className="grid gap-2">
-                    <div className="flex items-center">
-                        <Label htmlFor="password">Password</Label>
-                        {canResetPassword && (
-                            <TextLink
-                                href={request()}
-                                className="ml-auto text-sm"
-                                tabIndex={5}
-                            >
-                                Forgot password?
-                            </TextLink>
-                        )}
-                    </div>
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        required
-                        tabIndex={2}
-                        autoComplete="current-password"
-                        placeholder="Password"
-                    />
-                    <InputError message={errors.password} />
-                </div>
-
-                <div className="flex items-center space-x-3">
-                    <Checkbox
-                        id="remember"
-                        name="remember"
-                        tabIndex={3}
-                    />
-                    <Label htmlFor="remember">Remember me</Label>
-                </div>
-
-                <Button
-                    type="submit"
-                    className="mt-4 w-full"
-                    tabIndex={4}
-                    disabled={processing}
-                    data-test="login-button"
-                >
-                    {processing && (
-                        <LoaderCircle className="h-4 w-4 animate-spin" />
-                    )}
-                    Log in
-                </Button>
-            </div>
-
-            <div className="text-center text-sm text-muted-foreground">
-                Don't remember your password ?{' '}
-                <TextLink
-                        href={request()}
-                        className="ml-auto text-sm"
-                        tabIndex={5}
+                    <Form
+                        {...AuthenticatedSessionController.store.form()}
+                        resetOnSuccess={['password']}
+                        className="flex flex-col gap-6"
                     >
-                        Reset
-                </TextLink>
+                        {({ processing, errors }) => (
+                            <>
+                                <div className="grid gap-6">
+                                    <h2 className="text-lg font-semibold">Log in</h2>
 
-            </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="user_name">Username</Label>
+                                        <Input
+                                            id="user_name"
+                                            type="text"
+                                            name="user_name"
+                                            required
+                                            autoFocus
+                                            tabIndex={1}
+                                            autoComplete="username"
+                                            placeholder="Enter your username"
+                                        />
+                                        <InputError message={errors.user_name} />
+                                    </div>
 
-            <button
-                type="button"
-                onClick={() => setActiveForm(null)}
-                className="mt-2 w-full text-sm text-gray-500"
-            >
-                Back
-            </button>
-        </>
-    )}
-</Form>
+                                    <div className="grid gap-2">
+                                        <div className="flex items-center">
+                                            <Label htmlFor="password">Password</Label>
+                                            {canResetPassword && (
+                                                <TextLink
+                                                    href={request()}
+                                                    className="ml-auto text-sm"
+                                                    tabIndex={5}
+                                                >
+                                                    Forgot password?
+                                                </TextLink>
+                                            )}
+                                        </div>
+                                        <Input
+                                            id="password"
+                                            type="password"
+                                            name="password"
+                                            required
+                                            tabIndex={2}
+                                            autoComplete="current-password"
+                                            placeholder="Password"
+                                        />
+                                        <InputError message={errors.password} />
+                                    </div>
+
+                                    <div className="flex items-center space-x-3">
+                                        <Checkbox
+                                            id="remember"
+                                            name="remember"
+                                            tabIndex={3}
+                                        />
+                                        <Label htmlFor="remember">Remember me</Label>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="mt-4 w-full"
+                                        tabIndex={4}
+                                        disabled={processing}
+                                        data-test="login-button"
+                                    >
+                                        {processing && (
+                                            <LoaderCircle className="h-4 w-4 animate-spin" />
+                                        )}
+                                        Log in
+                                    </Button>
+                                </div>
+
+                                <div className="text-center text-sm text-muted-foreground">
+                                    Don't remember your password ?{' '}
+                                    <TextLink
+                                            href={request()}
+                                            className="ml-auto text-sm"
+                                            tabIndex={5}
+                                        >
+                                            Reset
+                                    </TextLink>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveForm(null)}
+                                    className="mt-2 w-full text-sm text-gray-500"
+                                >
+                                    Back
+                                </button>
+                            </>
+                        )}
+                    </Form>
 
 
 
                     )}
 
                     {activeForm === "register" && (
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                registerForm.post(route("register"));
-                            }}
-                            className="animate-slide-down"
+                       <Form
+                            {...RegisteredUserController.store.form()}
+                            resetOnSuccess={['password', 'password_confirmation']}
+                            disableWhileProcessing
+                            className="flex flex-col gap-6"
                         >
-                            <h2 className="mb-4 text-lg font-semibold">Register</h2>
-                            <input
-                                type="text"
-                                placeholder="Full Name"
-                                value={registerForm.data.name}
-                                onChange={(e) => registerForm.setData("name", e.target.value)}
-                                className="mb-3 w-full rounded border px-3 py-2"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Username"
-                                value={registerForm.data.user_name}
-                                onChange={(e) => registerForm.setData("user_name", e.target.value)}
-                                className="mb-3 w-full rounded border px-3 py-2"
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={registerForm.data.email}
-                                onChange={(e) => registerForm.setData("email", e.target.value)}
-                                className="mb-3 w-full rounded border px-3 py-2"
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={registerForm.data.password}
-                                onChange={(e) => registerForm.setData("password", e.target.value)}
-                                className="mb-3 w-full rounded border px-3 py-2"
-                            />
-                            <button
-                                type="submit"
-                                className="w-full rounded bg-green-600 px-4 py-2 text-white"
-                            >
-                                Register
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setActiveForm(null)}
-                                className="mt-2 w-full text-sm text-gray-500"
-                            >
-                                Back
-                            </button>
-                        </form>
+                            {({ processing, errors }) => (
+                                <>
+                                <h2 className="text-lg font-semibold">Register</h2>
+
+                                    <div className="grid gap-6">
+
+                                        <div className="grid gap-2">
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                required
+                                                tabIndex={2}
+                                                autoComplete="email"
+                                                name="email"
+                                                placeholder="Email"
+                                            />
+                                            <InputError message={errors.email} />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Input
+                                                id="user_name"
+                                                type="user_name"
+                                                required
+                                                tabIndex={2}
+                                                autoComplete="user_name"
+                                                name="user_name"
+                                                placeholder="Student ID"
+                                            />
+                                            <InputError message={errors.email} />
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Input
+                                                id="password"
+                                                type="password"
+                                                required
+                                                tabIndex={3}
+                                                autoComplete="new-password"
+                                                name="password"
+                                                placeholder="Password"
+                                            />
+                                            <InputError message={errors.password} />
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Input
+                                                id="password_confirmation"
+                                                type="password"
+                                                required
+                                                tabIndex={4}
+                                                autoComplete="new-password"
+                                                name="password_confirmation"
+                                                placeholder="Confirm password"
+                                            />
+                                            <InputError
+                                                message={errors.password_confirmation}
+                                            />
+                                        </div>
+
+                                        <Button
+                                            type="submit"
+                                            className="mt-2 w-full"
+                                            tabIndex={5}
+                                            data-test="register-user-button"
+                                        >
+                                            {processing && (
+                                                <LoaderCircle className="h-4 w-4 animate-spin" />
+                                            )}
+                                            Active account
+                                        </Button>
+                                    </div>
+                                    <button
+                                                type="button"
+                                                onClick={() => setActiveForm(null)}
+                                                className="mt-2 w-full text-sm text-gray-500"
+                                            >
+                                                Back
+                                            </button>
+
+
+                                </>
+                            )}
+                        </Form>
                     )}
 
                     {activeForm === "trace" && (
@@ -273,6 +314,13 @@ export default function Welcome({ status, canResetPassword }: LoginProps) {
                             className="animate-slide-down"
                         >
                             <h2 className="mb-4 text-lg font-semibold">Trace Request</h2>
+                            <input
+                                type="text"
+                                placeholder="File Number"
+                                value={traceForm.data.file_no}
+                                onChange={(e) => traceForm.setData("file_no", e.target.value)}
+                                className="mb-3 w-full rounded border px-3 py-2"
+                            />
                             <input
                                 type="text"
                                 placeholder="Enter National ID"
@@ -309,8 +357,8 @@ export default function Welcome({ status, canResetPassword }: LoginProps) {
                             >
 
                                 <motion.img
-                                    src="/au-logo.svg"
-                                    alt="Welcome"
+                                    src="/au-logo.png"
+                                    alt="IGSR Logo"
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
