@@ -41,3 +41,35 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+// Dashboard capabilities from backend
+export interface Capabilities {
+    roles: string[];
+    permissions: string[];
+    widgets: string[];
+}
+
+export interface DashboardUser {
+    id: number;
+    name: string;
+    user_name: string;
+}
+
+export interface DashboardProps {
+    user: DashboardUser;
+    capabilities: Capabilities;
+    totalCourses?: number;
+    completedAssignments?: number;
+    pendingExams?: number;
+    upcomingSchedule?: string;
+    messagesCount?: number;
+    notificationsCount?: number;
+}
+
+// Extend global Inertia Page props shape used in hooks
+declare global {
+    interface Window {
+        // allow ziggy/wayfinder etc.
+        route?: any;
+    }
+}

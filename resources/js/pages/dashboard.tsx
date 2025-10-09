@@ -1,33 +1,83 @@
-import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { UserIcon, BookOpenIcon, ClipboardCheckIcon, CalendarIcon, MessageSquareIcon, BellIcon } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout'
+import { Head, Link, usePage } from '@inertiajs/react'
+import { BreadcrumbItem, DashboardProps } from '@/types'
+import { useCapabilities, useWidgetAllowed, useCan } from '@/hooks/use-permissions'
+import WidgetCard from '@/components/widgets/widget-card'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { BookOpen, Building2, Users, GraduationCap, ClipboardList, SquarePlus, UserIcon, BookOpenIcon, ClipboardCheckIcon, CalendarIcon, MessageSquareIcon, BellIcon } from 'lucide-react'
+import { dashboard } from '@/routes'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'ٍSupper Admin Dashboard', href: dashboard().url },
-];
+    { title: 'Dashboard', href: dashboard().url },
+]
 
-interface DashboardProps {
-    totalCourses: number;
-    completedAssignments: number;
-    pendingExams: number;
-    upcomingSchedule: string;
-    messagesCount: number;
-    notificationsCount: number;
-}
-
-export default function Dashboard({
-    totalCourses,
-    completedAssignments,
-    pendingExams,
-    upcomingSchedule,
-    messagesCount,
-    notificationsCount,
-}: DashboardProps) {
+export default function Dashboard(props: DashboardProps) {
+    const {
+        totalCourses = 0,
+        completedAssignments = 0,
+        pendingExams = 0,
+        upcomingSchedule = 'No upcoming events',
+        messagesCount = 0,
+        notificationsCount = 0,
+    } = props
+    const { permissions } = useCapabilities()
+    const page = usePage<{ props: DashboardProps }>()
+    const { user } = page.props
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
+                {useWidgetAllowed('departments') && (
+                    <WidgetCard title="Departments" description="Manage departments" icon={<Building2 className="h-6 w-6 text-blue-600" />}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">View and organize departments</span>
+                            <Link href="/departments" className="text-sm text-blue-600 hover:underline">Open</Link>
+                        </div>
+                    </WidgetCard>
+                )}
+                {useWidgetAllowed('programs') && (
+                    <WidgetCard title="Programs" description="Manage programs" icon={<GraduationCap className="h-6 w-6 text-emerald-600" />}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">Create and update programs</span>
+                            <Link href="/programs" className="text-sm text-blue-600 hover:underline">Open</Link>
+                        </div>
+                    </WidgetCard>
+                )}
+                {useWidgetAllowed('courses') && (
+                    <WidgetCard title="Courses" description="Manage courses" icon={<BookOpen className="h-6 w-6 text-purple-600" />}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">Browse and manage courses</span>
+                            <Link href="/courses" className="text-sm text-blue-600 hover:underline">Open</Link>
+                        </div>
+                    </WidgetCard>
+                )}
+                {useWidgetAllowed('students') && (
+                    <WidgetCard title="Students" description="Student directory" icon={<Users className="h-6 w-6 text-teal-600" />}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">Find student records</span>
+                            <Link href="/students" className="text-sm text-blue-600 hover:underline">Open</Link>
+                        </div>
+                    </WidgetCard>
+                )}
+                {useWidgetAllowed('grades') && (
+                    <WidgetCard title="Grades" description="Grade management" icon={<ClipboardList className="h-6 w-6 text-amber-600" />}>
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600 dark:text-gray-300">Enter and review grades</span>
+                            <Link href="/grades" className="text-sm text-blue-600 hover:underline">Open</Link>
+                        </div>
+                    </WidgetCard>
+                )}
+            </div>
+            {useCan('courses.create') && (
+                <div className="mt-4">
+                    <Link href="/courses/create">
+                        <Button>
+                            <SquarePlus className="mr-2 h-4 w-4" /> Add Course
+                        </Button>
+                    </Link>
+                </div>
+            )}
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
 
                 {/* Top Cards */}
@@ -90,6 +140,7 @@ export default function Dashboard({
                     <p className="text-gray-500 dark:text-gray-300">Your upcoming classes, assignments, and exams will be displayed here.</p>
                 </div>
             </div>
+
         </AppLayout>
     );
 }

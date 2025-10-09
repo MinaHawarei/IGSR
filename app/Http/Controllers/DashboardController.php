@@ -14,7 +14,6 @@ class DashboardController extends BaseController
 {
     public function __construct()
     {
-        // لو عندك Verify Email شغال ضيف 'verified' كمان
         $this->middleware(['auth']); // , 'verified'
     }
 
@@ -22,17 +21,13 @@ class DashboardController extends BaseController
     {
         $user = $request->user();
 
-        // قدرات المستخدم + قائمة الودجتس المسموح بها
-        $capabilities = $this->capabilitiesFor($user);
-
         return Inertia::render('dashboard', [
             'user' => [
                 'id'        => $user->id,
                 'name'      => $user->name,
                 'user_name' => $user->user_name,
             ],
-            // هيكل ثابت يسهل استهلاكه في الواجهة
-            'capabilities' => $capabilities,
+
         ]);
     }
 
