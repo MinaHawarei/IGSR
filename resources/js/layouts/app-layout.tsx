@@ -57,7 +57,10 @@ export default function AppLayout({ children, breadcrumbs, ...props }: AppLayout
 
     return (
         <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-            {children}
+            <div className="p-6 lg:p-8">
+                {children}
+            </div>
+
 
             <AnimatePresence>
                 {message && (

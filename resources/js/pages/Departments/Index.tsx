@@ -1,10 +1,12 @@
 import AppLayout from '@/layouts/app-layout'
-import { Head, Link } from '@inertiajs/react'
+import { Head, Link, router } from '@inertiajs/react'
 import type { BreadcrumbItem } from '@/types'
 import { DataTable, type Column } from '@/components/data/data-table'
 import ActionButtons from '@/components/actions/action-buttons'
 import PermissionGate from '@/components/permissions/permission-gate'
 import { Button } from '@/components/ui/button'
+import { usePage } from '@inertiajs/react'
+
 
 type Department = { id: number; name: string; code: string }
 
@@ -15,15 +17,20 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns: Column<Department>[] = [
     { key: 'id', header: 'ID', className: 'w-16' },
-    { key: 'name', header: 'Name' },
-    { key: 'code', header: 'Code' },
+    { key: 'name', header: 'En Name' },
+    { key: 'name_ar', header: 'Ar Name' },
+    { key: 'description', header: 'Description' },
 ]
 
+interface PageProps {
+    departments: Department[]
+    [key: string]: unknown
+}
+
 export default function DepartmentsIndex() {
-    const rows: Department[] = [
-        { id: 1, name: 'Computer Science', code: 'CS' },
-        { id: 2, name: 'Mathematics', code: 'MATH' },
-    ]
+
+    const { departments } = usePage<PageProps>().props
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -36,19 +43,23 @@ export default function DepartmentsIndex() {
                     </Link>
                 </PermissionGate>
             </div>
+
             <DataTable
-                rows={rows}
+                rows={departments}
                 columns={columns}
                 page={1}
                 perPage={10}
-                total={rows.length}
+                total={departments.length}
                 actions={(row) => (
                     <ActionButtons
-                        onView={() => {}}
-                        onEdit={() => {}}
-                        onDelete={() => {}}
+                        onView={() => router.visit(`/departments/${row.id}`)}
+                        onEdit={() => router.visit(`/departments/${row.id}/edit`)}
+                        onDelete={() =>
+                            confirm('Are you sure you want to delete this department?') &&
+                            router.delete(`/departments/${row.id}`)
+                        }
                         viewPermission="departments.view"
-                        editPermission="departments.edit"
+                        editPermission="departments.update"
                         deletePermission="departments.delete"
                     />
                 )}

@@ -14,14 +14,14 @@ class DepartmentController extends Controller
     {
         $this->middleware('permission:departments.view')->only(['index','show']);
         $this->middleware('permission:departments.create')->only(['create','store']);
-        $this->middleware('permission:departments.edit')->only(['edit','update']);
+        $this->middleware('permission:departments.update')->only(['edit','update']);
         $this->middleware('permission:departments.delete')->only(['destroy']);
     }
 
     public function index()
     {
         return Inertia::render('Departments/Index', [
-            'departments' => [],
+            'departments' => Department::all(),
         ]);
     }
 
@@ -53,30 +53,59 @@ class DepartmentController extends Controller
 
     public function show($id)
     {
+            $department = Department::findOrFail($id);
+
         return Inertia::render('Departments/Show', [
-            'id' => (int) $id,
+            'department' => $department,
         ]);
     }
 
     public function edit($id)
     {
+        $department = Department::findOrFail($id);
+
         return Inertia::render('Departments/Edit', [
-            'id' => (int) $id,
+            'department' => $department,
         ]);
+
     }
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => ['required','string','max:255'],
-            'code' => ['required','string','max:50'],
-        ]);
-        return redirect()->route('departments.show', $id);
+        try {
+            $validated = $request->validate([
+                'name' => ['required','string','max:255'],
+                'name_ar' => ['required','string','max:50'],
+                'description' => ['nullable','string','max:255'],
+
+            ]);
+
+            $department = Department::findOrFail($id);
+            $department->update($validated);
+
+            return redirect()->route('departments.show', $id)
+                    ->with('success', 'Department updated successfully.');
+
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update department. Please try again.');
+        }
     }
 
     public function destroy($id)
     {
-        return redirect()->route('departments.index');
+        try {
+                $department = Department::findOrFail($id);
+                $department->delete();
+
+                return redirect()->route('departments.index')
+                    ->with('success', 'Department deleted successfully.');
+            } catch (\Exception $e) {
+                return redirect()->route('departments.index')
+                    ->with('error', 'Failed to delete department. Please try again.');
+        }
     }
 }
 

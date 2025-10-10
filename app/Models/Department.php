@@ -14,4 +14,8 @@ class Department extends Model
         'name_ar',
         'description',
     ];
+    public function programs()
+    {
+        return $this->hasMany(Program::class);
+    }
 }

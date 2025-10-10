@@ -10,8 +10,10 @@ class Course extends Model
      protected $fillable = [
         'code',
         'name',
+        'name_ar',
         'description',
         'credits',
+        'expiry',
         'program_id',
     ];
        /**
