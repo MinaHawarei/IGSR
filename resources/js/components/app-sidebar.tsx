@@ -9,26 +9,38 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import {
+  BookOpen,
+  Folder,
+  LayoutGrid,
+  GraduationCap,
+  Users,
+  FileText,
+  ClipboardList,
+  PenTool,
+  Video,
+   } from 'lucide-react';
 import { useCapabilities } from '@/hooks/use-permissions';
 import AppLogo from './app-logo';
 
 const staticItems: (NavItem & { perm?: string | null })[] = [
     { title: 'Dashboard', href: dashboard(), icon: LayoutGrid, perm: null },
-    { title: 'Departments', href: '/departments', icon: null, perm: 'departments.view' },
-    { title: 'Programs', href: '/programs', icon: null, perm: 'programs.view' },
-    { title: 'Courses', href: '/courses', icon: null, perm: 'courses.view' },
-    { title: 'Enrollments', href: '/enrollments', icon: null, perm: 'enrollments.view' },
-    { title: 'Students', href: '/students', icon: null, perm: 'students.view' },
-    { title: 'Grades', href: '/grades', icon: null, perm: 'grades.view' },
-    { title: 'Lessons', href: '/lessons', icon: null, perm: 'lessons.view' },
-    { title: 'Assignments', href: '/assignments', icon: null, perm: 'assignments.view' },
-    { title: 'Exams', href: '/exams', icon: null, perm: 'exams.view' },
-    { title: 'Live Classes', href: '/live-classes', icon: null, perm: 'live_classes.view' },
+    { title: 'Departments', href: '/departments', icon: Folder, perm: 'departments.view' },
+    { title: 'Programs', href: '/programs', icon: GraduationCap, perm: 'programs.view' },
+    { title: 'Courses', href: '/courses', icon: BookOpen, perm: 'courses.view' },
+    { title: 'Courses Dashboard', href: '/courses-dashboard', icon: BookOpen, perm: 'courses.update' },
+    { title: 'Enrollments', href: '/enrollments', icon: Users, perm: 'enrollments.view' },
+    { title: 'Students', href: '/students', icon: Users, perm: 'students.view' },
+    { title: 'Grades', href: '/grades', icon: ClipboardList, perm: 'grades.view' },
+    { title: 'Lessons', href: '/lessons', icon: FileText, perm: 'lessons.view' },
+    { title: 'Assignments', href: '/assignments', icon: PenTool, perm: 'assignments.view' },
+    { title: 'Exams', href: '/exams', icon: PenTool, perm: 'exams.view' },
+    { title: 'Live Classes', href: '/live-classes', icon: Video, perm: 'live_classes.view' },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -46,8 +58,21 @@ const footerNavItems: NavItem[] = [
 
 export function AppSidebar() {
     const { permissions } = useCapabilities();
+    const hasCoursesDashboard =
+        staticItems.find(i => i.title === 'Courses Dashboard' && (!i.perm || permissions.includes(i.perm))) !== undefined;
+
+
     const mainNavItems: NavItem[] = staticItems
-        .filter(item => !item.perm || permissions.includes(item.perm))
+         .filter(item => {
+            // فلترة حسب الصلاحيات
+            if (item.perm && !permissions.includes(item.perm)) return false;
+
+            // 🔒 لو المستخدم عنده Dashboard → اخفي Courses
+            if (hasCoursesDashboard && item.title === 'Courses') return false;
+
+            return true;
+            })
+
         .map(({ perm: _perm, ...rest }) => rest);
     return (
         <Sidebar collapsible="icon" variant="inset">

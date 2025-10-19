@@ -32,7 +32,7 @@ class CourseController extends Controller
                 'program' => $course->program?->name,
             ];
         });
-        return Inertia::render('Courses/Index', [
+        return Inertia::render('StudentCourses/Index', [
             'courses' => $courses,
         ]);
     }
@@ -64,7 +64,7 @@ class CourseController extends Controller
             // Here you would typically create the Program
             Course::create($validated);
 
-            return redirect()->route('courses.index')
+            return redirect()->route('StudentCourses.index')
                 ->with('success', 'Course created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -77,7 +77,7 @@ class CourseController extends Controller
     {
 
         $Course = Course::findOrFail($id);
-        return Inertia::render('Courses/Show', [
+        return Inertia::render('StudentCourses/Show', [
             'course' => $Course,
         ]);
     }
@@ -88,7 +88,7 @@ class CourseController extends Controller
         $course = Course::findOrFail($id);
         $program = Program::orderBy('name')->get(['id', 'name']);
 
-        return Inertia::render('Courses/Edit', [
+        return Inertia::render('StudentCourses/Edit', [
             'course' => $course,
             'programs' => $program,
         ]);
