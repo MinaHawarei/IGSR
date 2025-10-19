@@ -13,6 +13,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\LiveClassController;
 use App\Http\Controllers\CourseDashboardController;
+use App\Http\Controllers\SemesterController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -24,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('programs', ProgramController::class);
     Route::resource('courses', CourseController::class);
-    //Route::resource('coursesDashboard', CourseDashboardController::class);
+    Route::resource('semesters', SemesterController::class);
     Route::resource('enrollments', EnrollmentController::class);
     Route::resource('grades', GradeController::class);
     Route::resource('lessons', LessonController::class);

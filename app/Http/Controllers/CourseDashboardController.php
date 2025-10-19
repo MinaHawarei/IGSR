@@ -27,9 +27,9 @@ class CourseDashboardController extends Controller
                 'id' => $dept->id,
                 'name' => $dept->name,
                 'programs' => $dept->programs->map(function ($prog) {
-                    // 🟦 كل الكورسات الخاصة بالبرنامج
+                    // all courses in the program
                     $courses = Course::where('program_id', $prog->id)
-                        ->with('program') // عشان لو في بيانات متعلقة بالبرنامج
+                        ->with('program') // because if there is related program data
                         ->get()
                         ->map(function ($course) {
                             return [
@@ -44,7 +44,8 @@ class CourseDashboardController extends Controller
                             ];
                         });
 
-                    // 🟩 الكورسات المفعلة (من جدول CourseOffering)
+                    //courses currently being offered in the program
+
                     $activeCourses = CourseOffering::whereHas('course', function ($q) use ($prog) {
                             $q->where('program_id', $prog->id);
                         })

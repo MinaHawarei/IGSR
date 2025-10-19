@@ -34,6 +34,7 @@ const staticItems: (NavItem & { perm?: string | null })[] = [
     { title: 'Programs', href: '/programs', icon: GraduationCap, perm: 'programs.view' },
     { title: 'Courses', href: '/courses', icon: BookOpen, perm: 'courses.view' },
     { title: 'Courses Dashboard', href: '/courses-dashboard', icon: BookOpen, perm: 'courses.update' },
+    { title: 'Semesters', href: '/semesters', icon: BookOpen, perm: 'semesters.view' },
     { title: 'Enrollments', href: '/enrollments', icon: Users, perm: 'enrollments.view' },
     { title: 'Students', href: '/students', icon: Users, perm: 'students.view' },
     { title: 'Grades', href: '/grades', icon: ClipboardList, perm: 'grades.view' },
