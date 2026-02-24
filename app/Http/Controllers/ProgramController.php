@@ -118,14 +118,14 @@ class ProgramController extends Controller
     public function destroy($id)
     {
         try {
-                $Program = Program::findOrFail($id);
-                $Program->delete();
+            $Program = Program::findOrFail($id);
+            $Program->delete();
 
-                return redirect()->route('programs.index')
-                    ->with('success', 'Program deleted successfully.');
-            } catch (\Exception $e) {
-                return redirect()->route('programs.index')
-                    ->with('error', 'Failed to delete Program. Please try again.');
+            return redirect()->route('programs.index')
+                ->with('success', 'Program deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('programs.index')
+                ->with('error', 'Failed to delete Program. Please try again.');
         }
     }
 }

@@ -16,6 +16,9 @@ return new class extends Migration
             $table->integer('enrolled_count')->default(0);
             $table->string('status')->default('open'); // open/closed
             $table->timestamps();
+
+            $table->unique(['course_id', 'semester_id']);
+            $table->index('status');
         });
     }
 

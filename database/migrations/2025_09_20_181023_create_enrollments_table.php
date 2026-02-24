@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+            $table->foreignId('course_offering_id')->constrained('course_offerings')->cascadeOnDelete();
             $table->enum('status', ['enrolled', 'withdrawn', 'passed', 'failed'])->default('enrolled');
 
             $table->timestamp('enrolled_at')->nullable();

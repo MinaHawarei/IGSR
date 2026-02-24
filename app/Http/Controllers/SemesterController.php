@@ -91,31 +91,62 @@ class SemesterController extends BaseController
 
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Semester $semester)
     {
         try {
+            // تحقق من التواريخ فقط، الاسم والحالة سيتم حسابها تلقائيًا
             $validated = $request->validate([
-                'code' => ['required', 'string', 'max:255'],
-                'name' => ['required', 'string', 'max:255'],
-                'name_ar' => ['required', 'string', 'max:255'],
-                'level' => ['required', 'in:Bachelors,Diploma,Masters,PhD'],
-                'department_id' => ['required', 'exists:departments,id'],
-                'description' => ['nullable', 'string', 'max:255'],
+                'start_date' => ['required', 'date'],
+                'end_date' => ['required', 'date', 'after:start_date'],
             ]);
 
-            $semester = Semester::findOrFail($id);
-            $semester->update($validated);
+            // توليد الاسم تلقائيًا من start_date
+            $start = new \DateTime($validated['start_date']);
+            $month = (int) $start->format('m');
+            if ($month >= 1 && $month <= 4) $season = 'Spring';
+            elseif ($month >= 5 && $month <= 8) $season = 'Summer';
+            else $season = 'Fall';
+            $year = $start->format('Y');
+            $name = "$season $year";
 
-            return redirect()->route('semesters.show', $id)
-                    ->with('success', 'semester updated successfully.');
+            // تحقق من التكرار، مع استثناء السجل الحالي
+            $exists = Semester::where('name', $name)
+                ->where('id', '<>', $semester->id)
+                ->exists();
+            if ($exists) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Semester name already exists. Please choose another start date.');
+            }
 
+            // حساب الحالة تلقائيًا
+            $today = now();
+            if ($today < $validated['start_date']) $status = 'upcoming';
+            elseif ($today >= $validated['start_date'] && $today <= $validated['end_date']) $status = 'active';
+            else $status = 'completed';
 
+            // تحديث السجل
+            $semester->update([
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'name' => $name,
+                'status' => $status,
+            ]);
+
+            return redirect()->route('semesters.index')
+                ->with('success', 'Semester updated successfully.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to update semester. Please try again.');
+                ->with('error', 'Failed to update Semester. Please try again.');
         }
     }
+
 
     public function destroy($id)
     {

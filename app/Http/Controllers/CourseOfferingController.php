@@ -5,34 +5,32 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controller;
-use App\Models\Course;
+use App\Models\CourseOffering;
 use App\Models\Program;
 
-class CourseController extends Controller
+class CourseOfferingController extends Controller
 {
-    public function __construct()
+        public function __construct()
     {
-        $this->middleware('permission:courses.view')->only(['index','show']);
-        $this->middleware('permission:courses.create')->only(['create','store']);
-        $this->middleware('permission:courses.update')->only(['edit','update']);
-        $this->middleware('permission:courses.delete')->only(['destroy']);
+        $this->middleware('permission:course_offerings.manage')->only(['index','show','create','store','edit','update','destroy']);
+
     }
 
     public function index()
     {
-        $courses = Course::with('program')->get()->map(function($course) {
-            return [
-                'id' => $course->id,
-                'code' => $course->code,
-                'name' => [$course->name, $course->name_ar],
-                'name_ar' => $course->name_ar,
-                'description' => $course->description,
-                'credits' => $course->credits,
-                'expiry' => $course->expiry,
-                'program' => $course->program?->name,
-            ];
-        });
-        return Inertia::render('StudentCourses/Index', [
+        $courses = CourseOffering::with(['course', 'semester'])
+            ->get()
+            ->map(function ($offering) {
+                return [
+                    'id' => $offering->id,
+                    'course_name' => [$offering->course->code, $offering->course->name, $offering->course->name_ar],
+                    'semester_name' => $offering->semester->name ?? 'N/A',
+                    'capacity' => $offering->capacity,
+                    'enrolled_count' => $offering->enrolled_count,
+                    'status' => $offering->status,
+                ];
+            });
+            return Inertia::render('CourseOffering/Index', [
             'courses' => $courses,
         ]);
     }
@@ -41,7 +39,7 @@ class CourseController extends Controller
     {
         $programs = Program::orderBy('name')->get(['id', 'name']);
 
-        return Inertia::render('Courses/Create',[
+        return Inertia::render('CourseOffering/Create',[
             'programs' => $programs,
         ]);
     }
@@ -62,9 +60,9 @@ class CourseController extends Controller
             ]);
 
             // Here you would typically create the Program
-            Course::create($validated);
+            CourseOffering::create($validated);
 
-            return redirect()->route('StudentCourses.index')
+            return redirect()->route('CourseOffering.index')
                 ->with('success', 'Course created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
@@ -76,8 +74,8 @@ class CourseController extends Controller
     public function show($id)
     {
 
-        $Course = Course::findOrFail($id);
-        return Inertia::render('StudentCourses/Show', [
+        $Course = CourseOffering::findOrFail($id);
+        return Inertia::render('CourseOffering/Show', [
             'course' => $Course,
         ]);
     }
@@ -85,25 +83,25 @@ class CourseController extends Controller
     public function edit($id)
     {
 
-        $course = Course::findOrFail($id);
+        $course = CourseOffering::findOrFail($id);
         $program = Program::orderBy('name')->get(['id', 'name']);
 
-        return Inertia::render('StudentCourses/Edit', [
+        return Inertia::render('CourseOffering/Edit', [
             'course' => $course,
             'programs' => $program,
         ]);
     }
 
-    public function update(Request $request, $id)
+        public function update(Request $request, $id)
     {
         try {
             $validated = $request->validate([
                 'title' => ['required','string','max:255'],
                 'code' => ['required','string','max:50'],
             ]);
-            $course = Course::findOrFail($id);
+            $course = CourseOffering::findOrFail($id);
             $course->update($validated);
-            return redirect()->route('courses.show', $id)
+            return redirect()->route('CourseOffering.show', $id)
              ->with('success', 'Course updated successfully.');
 
         } catch (\Exception $e) {
@@ -116,9 +114,9 @@ class CourseController extends Controller
     public function destroy($id)
     {
         try {
-            $course = Course::findOrFail($id);
+            $course = CourseOffering::findOrFail($id);
             $course->delete();
-            return redirect()->route('courses.index')
+            return redirect()->route('CourseOffering.index')
              ->with('success', 'Course deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()

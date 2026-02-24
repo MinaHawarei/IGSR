@@ -97,14 +97,14 @@ class DepartmentController extends Controller
     public function destroy($id)
     {
         try {
-                $department = Department::findOrFail($id);
-                $department->delete();
+            $department = Department::findOrFail($id);
+            $department->delete();
 
-                return redirect()->route('departments.index')
-                    ->with('success', 'Department deleted successfully.');
-            } catch (\Exception $e) {
-                return redirect()->route('departments.index')
-                    ->with('error', 'Failed to delete department. Please try again.');
+            return redirect()->route('departments.index')
+                ->with('success', 'Department deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('departments.index')
+                ->with('error', 'Failed to delete department. Please try again.');
         }
     }
 }

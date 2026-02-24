@@ -10,11 +10,10 @@ import { usePage } from '@inertiajs/react'
 
 type courses = {
     id: number
-    name: string[]
-    code: string
-    program: string
-    credits: string
-    expiry: number
+    course_name: string[]
+    semester_name: string
+    capacity: number
+    enrolled_count: number
 }
 
 
@@ -24,21 +23,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ]
 
 const columns: Column<courses>[] = [
-    { key: 'code', header: 'Code' },
     {
-        key: 'name',
+        key: 'course_name',
         header: 'Name',
         render: (row) => (
             <div className="flex flex-col">
-                {row.name.map((n, i) => (
+                {row.course_name.map((n, i) => (
                     <span key={i}>{n}</span>
                 ))}
             </div>
         ),
     },
-    { key: 'program', header: 'program' },
-    { key: 'credits', header: 'credits' },
-    { key: 'expiry', header: 'expiry' },
+    { key: 'semester_name', header: 'semester' },
+    { key: 'capacity', header: 'capacity' },
 ]
 
 interface PageProps {
@@ -70,18 +67,26 @@ export default function coursesIndex() {
                 perPage={10}
                 total={courses.length}
                 actions={(row) => (
-                    <ActionButtons
-                        onView={() => router.visit(`/courses/${row.id}`)}
-                        onEdit={() => router.visit(`/courses/${row.id}/edit`)}
-                        onDelete={() =>
-                            confirm('Are you sure you want to delete this course?') &&
-                            router.delete(`/courses/${row.id}`)
-                        }
-                        viewPermission="courses.view"
-                        editPermission="courses.update"
-                        deletePermission="courses.delete"
-                    />
+                <div className="flex gap-2">
+                        <Button
+                            variant="default"
+                            onClick={() => router.post(`/enrollments`, { course_offering_id: row.id })}
+                        >
+                            Enroll
+                        </Button>
+
+                        <Button
+                            variant="destructive"
+                            onClick={() =>
+                                confirm('Are you sure you want to withdraw from this course?') &&
+                                router.delete(`/enrollments/${row.id}`)
+                            }
+                        >
+                            Withdraw
+                        </Button>
+                    </div>
                 )}
+
             />
         </AppLayout>
     )

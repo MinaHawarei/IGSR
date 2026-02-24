@@ -15,7 +15,7 @@ interface Course {
 }
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'courses', href: '/courses' },
+    { title: 'courses', href: '/admin-courses' },
 ]
 
 interface Program {
@@ -165,7 +165,8 @@ export default function CoursesDashboard({ departments = [] }: CoursesDashboardP
 
       {/* Manage Offerings */}
       <div
-        onClick={() => router.visit(`/programs/${selectedProgram.id}/offerings`)}
+        //onClick={() => router.visit(`/programs/${selectedProgram.id}/offerings`)}
+        onClick={() => router.visit(`/CourseOffering`)}
         className="group p-6 bg-purple-100 dark:bg-purple-900 rounded-2xl shadow-md hover:shadow-lg cursor-pointer transition transform hover:-translate-y-1 hover:bg-purple-200 dark:hover:bg-purple-800"
       >
         <h3 className="text-lg font-semibold text-purple-800 dark:text-purple-200 mb-2">

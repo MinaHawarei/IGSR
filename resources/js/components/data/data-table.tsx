@@ -21,14 +21,14 @@ export interface DataTableProps<T> {
     emptyMessage?: string
 }
 
-export function DataTable<T extends { id?: string | number }>({ 
-    rows, 
-    columns, 
-    page = 1, 
-    perPage = 10, 
-    total, 
-    onPageChange, 
-    actions, 
+export function DataTable<T extends { id?: string | number }>({
+    rows,
+    columns,
+    page = 1,
+    perPage = 10,
+    total,
+    onPageChange,
+    actions,
     loading = false,
     emptyMessage = 'No records found.'
 }: DataTableProps<T>) {
@@ -47,7 +47,7 @@ export function DataTable<T extends { id?: string | number }>({
                             {actions && <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">Actions</th>}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white dark:bg-gray-900 dark:divide-gray-800">
+                    <tbody className="divide-y divide-gray-200 bg-blue-100 dark:bg-gray-900 dark:divide-gray-800">
                         {rows.map((row, idx) => (
                             <tr key={(row.id ?? idx) as React.Key} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40">
                                 {columns.map(col => (

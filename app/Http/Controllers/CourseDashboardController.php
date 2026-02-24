@@ -155,6 +155,4 @@ class CourseDashboardController extends Controller
         return redirect()->route('courses.index');
     }
 
-
-
 }

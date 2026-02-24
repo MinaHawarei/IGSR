@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\LessonController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\LiveClassController;
 use App\Http\Controllers\CourseDashboardController;
 use App\Http\Controllers\SemesterController;
+use App\Http\Controllers\CourseOfferingController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -24,7 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('departments', DepartmentController::class);
     Route::resource('programs', ProgramController::class);
-    Route::resource('courses', CourseController::class);
+    Route::resource('courses', StudentCourseController::class);
+    Route::resource('admin-courses', CourseController::class);
+    Route::resource('CourseOffering', CourseOfferingController::class);
     Route::resource('semesters', SemesterController::class);
     Route::resource('enrollments', EnrollmentController::class);
     Route::resource('grades', GradeController::class);
@@ -37,6 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('courses-dashboard')->name('coursesDashboard.')->group(function () {
         Route::get('/', [CourseDashboardController::class, 'index'])->name('index'); // عرض الأقسام والبرامج
         Route::get('/all/{program}/courses', [CourseController::class, 'index'])->name('all'); // عرض كل الكورسات
+        Route::get('/programs/{program}/active-courses', [CourseOfferingController::class, 'index'])->name('all'); // عرض كل الكورسات
+        Route::get('/programs/{program}/offerings', [CourseOfferingController::class, 'index'])->name('all'); // عرض كل الكورسات
         Route::get('/active', [CourseDashboardController::class, 'activeCourses'])->name('active'); // عرض الكورسات المفعلة فقط
     });
 });
